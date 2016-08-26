@@ -35,7 +35,12 @@ var samlStrategy = new saml.Strategy({
   validateInResponseTo: false,
   disableRequestedAuthnContext: true
 }, function(profile, done) {
-  return done(null, profile); 
+      var myUser = {
+        givenName : profile.givenName,
+        mail: profile.mail,
+        sn: profile.sn
+    }
+  return done(null, myUser); 
 });
 
 passport.use(samlStrategy);
@@ -58,7 +63,7 @@ function ensureAuthenticated(req, res, next) {
 app.get('/',
   ensureAuthenticated, 
   function(req, res) {
-    res.send('Authenticated');
+    res.send('Hello <b>' + req.user.givenName + "</b> ! <br><br>Your mail is  : <b>" + req.user.mail + "</b> and your last name is : <b>" + req.user.sn + "</b>");
   }
 );
 
@@ -82,7 +87,7 @@ app.get('/login/fail',
   }
 );
 
-app.get('/Shibboleth.sso/Metadata', 
+app.get('/sso/Metadata', 
   function(req, res) {
     res.type('application/xml');
     res.status(200).send(samlStrategy.generateServiceProviderMetadata(fs.readFileSync(__dirname + '/cert/cert.pem', 'utf8')));
@@ -98,4 +103,3 @@ app.use(function(err, req, res, next) {
 var server = app.listen(4006, function () {
   console.log('Listening on port %d', server.address().port)
 });
-
