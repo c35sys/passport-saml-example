@@ -34,3 +34,5 @@ Usage
 npm install
 node app.js
 ```
+
+By default, the node app is listening on port 4006.
